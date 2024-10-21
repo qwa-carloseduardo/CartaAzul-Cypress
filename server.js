@@ -8,10 +8,12 @@ const PORT = 3001;
 app.get('/seguro-novo', (req, res) => {
     const tipo = req.query.tipo; 
     const qtdApolices = req.query.qtdApolices; 
+    const numeroApolice = req.query.numeroApolice; 
 
-    console.log(`Recebido tipo: ${tipo}, quantidade de apólices: ${qtdApolices}`);
+    console.log(`Recebido tipo: ${tipo}, quantidade de apólices: ${qtdApolices}${numeroApolice ? ` e número da apólice: ${numeroApolice}` : ''}`);
 
-    const child = spawn('npx', ['cypress', 'run', '--spec', 'C:\\Users\\aliss\\Desktop\\PORTO\\Cypress\\Porto.Cy\\cypress\\e2e\\Funcionalidades\\SeguroNovo.cy.js', '--env', `tipo=${tipo},qtdApolices=${qtdApolices}`], { shell: true });
+    const child = spawn('npx', ['cypress', 'run', '--spec', 'C:\\Users\\aliss\\Desktop\\PORTO\\Cypress\\Porto.Cy\\cypress\\e2e\\Funcionalidades\\SeguroNovo.cy.js', '--env', `tipo=${tipo},qtdApolices=${qtdApolices},numeroApolice=${numeroApolice}`], { shell: true });
+
 
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);

@@ -1,7 +1,7 @@
 Cypress.Commands.add('LoginLocal', () => {
   cy.visit('https://apphubtst.portoseguro.brasil/autofrota/cartaazul', { timeout: 480000 });
-  cy.get(':nth-child(1) > :nth-child(2) > input').type('P0650050');
-  cy.get(':nth-child(2) > :nth-child(2) > input').type('chQW@_01');
+  cy.get(':nth-child(1) > :nth-child(2) > input').type('P0650050', { timeout: 480000 });
+  cy.get(':nth-child(2) > :nth-child(2) > input').type('chQW@_01', { timeout: 480000 });
   cy.get('[type="button"]').click();
   // cy.contains('Informe a SUSEP do Corretor').type('COL10J', { timeout: 480000 });
   cy.contains('Informe a SUSEP do Corretor').type('COL10J', { timeout: 480000 });

@@ -1,3 +1,4 @@
+let cont = 0;
 Cypress.Commands.add('Transmitir', (tipo,renovacao) => {
   cy.log('Criando Orcamento')
   cy.buscaOferta(tipo,renovacao);
@@ -8,7 +9,6 @@ Cypress.Commands.add('Transmitir', (tipo,renovacao) => {
     .then(($numeroOrcamento) => {
       Cypress.env('numeroOrcamentoGerado', $numeroOrcamento.trim());
       console.log('[Info] Numero orcamento coletado');
-      cy.log($numeroOrcamento);
       if(tipo=='PF'){
         cy.dadosPropostaPF();
       }
@@ -22,6 +22,7 @@ Cypress.Commands.add('Transmitir', (tipo,renovacao) => {
       
       cy.get('#input-numero-orcamento').type($numeroOrcamento.trim(), { force: true }, { timeout: 48000 });
       cy.get('#btn-pesquisar').click({ force: true });
+      cy.log($numeroOrcamento);
       cy.Emitir().then(() => {
         return $numeroOrcamento.trim();
       });
@@ -31,9 +32,10 @@ Cypress.Commands.add('Transmitir', (tipo,renovacao) => {
 Cypress.Commands.add('buscaOferta', (tipo,renovacao) => {
   cy.intercept('GET', 'https://apphubtst.portoseguro.brasil/api/frota/cartaazul/v1/pessoas/*').as('cpfRequest'); 
   cy.log(renovacao)
-  if(renovacao){
+  if (renovacao !== null && renovacao.numeroApolice) {
     cy.AdicionaRenovacao(renovacao);
-  }
+}
+
   if (tipo == 'PF') {
     cy.log('Pessoa Fisica')
     cy.get('#input-cpfCnpj').type(gerarCPF());
@@ -128,44 +130,27 @@ Cypress.Commands.add('FormaPagamento', () => {
 });
 
 Cypress.Commands.add('Emitir', () => {
-  const maxTime = 10000; 
-  const startTime = Date.now(); 
+      cy.wait(30000);
+      cy.get('#btn-menu-doc-0', { timeout: 10000 })
+        .should('be.visible')
+        .click({ force: true });
 
-  const clicarMenuUpdate = () => {
-    cy.log('Tentando clicar no menu para atualizar...');
-    cy.get('#btn-menu-doc-0', { timeout: 10000 }).click({ force: true });
-    cy.get('#btn-item-menu-doc-1', { timeout: 10000 }).click({ force: true });
-  };
-
-  const verificarTransmitir = () => {
-    const currentTime = Date.now();
-    const tempoDecorrido = currentTime - startTime;
-
-    if (tempoDecorrido > maxTime) {
-      cy.log('Tempo limite de 30 segundos atingido, saindo do loop.');
-      return;
-    }
-
+      cy.get('#btn-item-menu-doc-1', { timeout: 10000 })
+        .should('be.visible')
+        .click({ force: true });
+     cy.intercept('GET', 'https://apphubtst.portoseguro.brasil/api/frota/cartaazul/v1/cotacoes?numeroDocumento=*&susep=*&page=0&size=5').as('emissaoRequest'); 
+     cy.wait('@emissaoRequest', { timeout: 10000 });
     cy.get('.lbl-class-azul').invoke('text').then((statusDocumento) => {
       statusDocumento = statusDocumento.trim();
-      Cypress.env('statusDocumento', statusDocumento); 
-
-      cy.log(`Status atual do documento: "${statusDocumento}"`);
-      
-      if (statusDocumento === 'Transmitida') {
-        clicarMenuUpdate();
-        cy.intercept('GET', 'https://apphubtst.portoseguro.brasil/api/frota/cartaazul/v1/cotacoes?numeroDocumento=*&susep=*&page=0&size=5').as('emissaoRequest');
-        cy.wait('@emissaoRequest', { timeout: 48000 })
-        cy.wait(1000)
-        verificarTransmitir();
-      } else {
-        cy.log(`Status do documento: "${statusDocumento}".`);
+      if (statusDocumento === 'Transmitida' && cont < 1) {
+        cont++; 
+        cy.Emitir(); 
       }
+      Cypress.env('statusDocumento', statusDocumento); 
+      cy.log(statusDocumento)
     });
-  };
-
-  verificarTransmitir();
 });
+
 
 Cypress.Commands.add('AdicionaRenovacao', (renovacao) => {
   renovacao = String(renovacao);
@@ -173,9 +158,6 @@ Cypress.Commands.add('AdicionaRenovacao', (renovacao) => {
   cy.get('#input-sucursal').type(renovacao.slice(0, 2));
   cy.get('#input-numero-apolice').type(renovacao.slice(2),{ force: true });
 });
-
-
-
 
   Cypress.Commands.add('AcessaImportacao', () => {
     cy.get('#span-numero-orcamento', { timeout: 480000 })
