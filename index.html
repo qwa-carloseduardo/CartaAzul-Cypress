@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executar Testes Cypress</title>
+  <script>
+    async function runTest(testFile) {
+      const response = await fetch('http://localhost:3001/run-tests', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ testFile })
+      });
+
+      const result = await response.json();
+      alert(result.message || result.error);
+    }
+  </script>
+</head>
+<body>
+  <h1>Executar Testes Cypress</h1>
+  <button onclick="runTest('seguro_novo.spec.js')">Seguro Novo</button>
+  <button onclick="runTest('outro_teste.spec.js')">Outro Teste</button>
+</body>
+</html>
