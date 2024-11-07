@@ -125,7 +125,7 @@ Cypress.Commands.add('FormaPagamento', () => {
   cy.get('#option-forma-pagamento-0').click({ force: true })
   console.log('[Info] Forma pagamento selecionada');
   cy.get('#select-valor-seguro').click({ force: true });
-  cy.get('#option-valor-seguro-0').click({ force: true })
+  cy.get('#option-valor-seguro-4').click({ force: true })
   console.log('[Info] Valor Seguro selecionado');
 });
 
