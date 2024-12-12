@@ -30,7 +30,8 @@ Cypress.Commands.add('Transmitir', (tipo,renovacao) => {
 });
 
 Cypress.Commands.add('buscaOferta', (tipo,renovacao) => {
-  cy.intercept('GET', 'https://apphubtst.portoseguro.brasil/api/frota/cartaazul/v1/pessoas/*').as('cpfRequest'); 
+  // cy.intercept('GET', 'https://apphubtst.portoseguro.brasil/api/frota/cartaazul/v1/pessoas/*').as('cpfRequest'); 
+  cy.intercept('GET', 'http://localhost:4200/autofrota/cartaazul//v1/pessoas/*').as('cpfRequest'); 
   cy.log(renovacao)
   if (renovacao !== null && renovacao.numeroApolice) {
     cy.AdicionaRenovacao(renovacao);
@@ -40,7 +41,8 @@ Cypress.Commands.add('buscaOferta', (tipo,renovacao) => {
     cy.log('Pessoa Fisica')
     cy.get('#input-cpfCnpj').type(gerarCPF());
     cy.realPress('Tab');
-    cy.wait('@cpfRequest', { timeout: 10000 });
+    cy.wait(1000)
+    // cy.wait('@cpfRequest', { timeout: 10000 });
     
   } else if (tipo == 'PJ') {
     cy.log('Pessoa Juridica')
@@ -85,9 +87,9 @@ Cypress.Commands.add('FazImportacao', () => {
 
 
 Cypress.Commands.add('dadosPropostaPF', () => {
-  cy.get('#input-data-nascimento', { timeout: 480000 }).type('28072003',{ force: true })
+  cy.get('#input-data-nascimento', { timeout: 480000 }).clear().type('28071999',{ force: true })
   console.log('[Info] Data Nascimento Inserida');
-  cy.get('#input-profissao').type('caminhoneiro', { force: true })
+  cy.get('#input-profissao').clear().type('caminhoneiro', { force: true })
   console.log('[Info] Profissao Inserida');
   cy.get('#option-profissao-0', { timeout: 480000 }).click()
   cy.get('#select-faixa-renda').click({ force: true })
@@ -103,20 +105,20 @@ Cypress.Commands.add('dadosPropostaPF', () => {
 });
 
 Cypress.Commands.add('InsereEndereco', () => {
-  cy.get('#input-cep').type('01141030')
+  cy.get('#input-cep').clear().type('01141030')
   console.log('[Info] Cep inserido');
-  cy.get('#input-numero').type('157')
+  cy.get('#input-numero').clear().type('157')
   console.log('[Info] Numero do endereco inserido');
   cy.get('#select-tipo-telefone').click({ force: true });
   cy.get('#option-tipo-telefone-0').click()
   console.log('[Info] Tipo telefone selecionado');
-  cy.get('#input-numero-telefone').type('1234567890', { force: true })
+  cy.get('#input-numero-telefone').clear().type('1234567890', { force: true })
   console.log('[Info] Numero telefone inserido');
 });
 
 
 Cypress.Commands.add('InsereEmail', () => {
-  cy.get('#input-email-segurado').type('testes@teste.com.br');
+  cy.get('#input-email-segurado').clear().type('testes@teste.com.br');
   console.log('[Info] E-mail inserido');
 });
 
@@ -176,6 +178,10 @@ Cypress.Commands.add('AdicionaRenovacao', (renovacao) => {
   Cypress.Commands.add('SelecionaPrimeiraOferta', () => {
     cy.get(':nth-child(1) > app-resultado-card-oferta > .mat-mdc-card > .mat-mdc-card-content > .mt-4 > .d-block > .mdc-button__label', { timeout: 480000 }).click();
     console.log('[Info] Primeira Oferta Selecionada');
+  });
+  Cypress.Commands.add('SelecionaSegundaOferta', () => {
+    cy.get(':nth-child(2) > app-resultado-card-oferta > .mat-mdc-card > .mat-mdc-card-content > .mt-4 > .d-block > .mdc-button__label', { timeout: 480000 }).click();
+    console.log('[Info] Segunda Oferta Selecionada');
   });
 
   function gerarCPF() {

@@ -9,6 +9,7 @@
     "cypress-file-upload": "^5.0.8",
     "cypress-plugin-tab": "^1.0.5",
     "cypress-real-events": "^1.13.0",
-    "exceljs": "^4.4.0"
+    "exceljs": "^4.4.0",
+    "pdf-parse": "^1.1.1"
   }
 }

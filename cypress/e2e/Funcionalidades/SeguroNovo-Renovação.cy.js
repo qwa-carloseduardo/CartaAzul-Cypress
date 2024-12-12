@@ -1,5 +1,8 @@
 let documentosGerados = [];
-let statusDocumento = '';
+const apoliceStatus = Cypress.env('apoliceStatus') || 'Transmitida';
+const tipo = Cypress.env('tipo') || 'PF';
+const quantidade = Number(Cypress.env('qtdApolices')) || 1;
+const renovacao = Cypress.env('numeroApolice') || null; 
 
 beforeEach(() => {
     cy.AcessaCotacaoLocal();
@@ -8,14 +11,17 @@ beforeEach(() => {
 
 describe('[Info] Criando Apolice do tipo:', () => {
         console.log('[Info] Pessoa Fisica');
-        for (let i = 0; i < 1; i++) {
+        for (let i = 0; i < quantidade; i++) {
             it(`Pessoa Fisica - Execução ${i + 1}`, () => {
-                const tipo = 'PF';
-                const renovacao = 953413609;
                 cy.Transmitir(tipo,renovacao).then((docNumeroPF) => {
-                    statusDocumento = Cypress.env('statusDocumento');
                     documentosGerados.push({ tipo: tipo, numero: docNumeroPF, status: statusDocumento });
                 });
             });
         }
-});
+        after(() => {
+            const output = JSON.stringify(documentosGerados, null, 2);
+            cy.writeFile('cypress/documentosGerados.json', output);
+            cy.log('Documentos gerados salvos em documentosGerados.json');
+            console.log('Documentos gerados:', documentosGerados);
+        });
+    });

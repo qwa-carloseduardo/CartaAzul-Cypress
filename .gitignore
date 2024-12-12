@@ -4,6 +4,6 @@ node_modules/
 # Ignorar logs
 *.log
 
-# Ignorar outros arquivos temporários do Node.js
+# Ignorar outros arquivos temporï¿½rios do Node.js
 .env
 dist/

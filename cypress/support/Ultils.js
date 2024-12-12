@@ -1,5 +1,5 @@
 Cypress.Commands.add('insereNumLetraEspecial', (referencia) => {
-  cy.get(referencia).type('a1%'.repeat(10),{ force: true });
+  cy.get(referencia).type('a1%'.repeat(11),{ force: true });
 });
 
 Cypress.Commands.add('insereNum', (referencia,limite) => {
